@@ -55,7 +55,9 @@ case TRANSACTION_startChat:
 data.enforceInterface(DESCRIPTOR);
 java.lang.String _arg0;
 _arg0 = data.readString();
-this.startChat(_arg0);
+com.unic.micsay.services.MessageListener _arg1;
+_arg1 = com.unic.micsay.services.MessageListener.Stub.asInterface(data.readStrongBinder());
+this.startChat(_arg0, _arg1);
 reply.writeNoException();
 return true;
 }
@@ -112,13 +114,14 @@ _data.recycle();
 }
 return _result;
 }
-@Override public void startChat(java.lang.String email) throws android.os.RemoteException
+@Override public void startChat(java.lang.String email, com.unic.micsay.services.MessageListener listener) throws android.os.RemoteException
 {
 android.os.Parcel _data = android.os.Parcel.obtain();
 android.os.Parcel _reply = android.os.Parcel.obtain();
 try {
 _data.writeInterfaceToken(DESCRIPTOR);
 _data.writeString(email);
+_data.writeStrongBinder((((listener!=null))?(listener.asBinder()):(null)));
 mRemote.transact(Stub.TRANSACTION_startChat, _data, _reply, 0);
 _reply.readException();
 }
@@ -164,7 +167,7 @@ static final int TRANSACTION_send = (android.os.IBinder.FIRST_CALL_TRANSACTION +
 static final int TRANSACTION_closeChat = (android.os.IBinder.FIRST_CALL_TRANSACTION + 3);
 }
 public java.lang.String currentAccount() throws android.os.RemoteException;
-public void startChat(java.lang.String email) throws android.os.RemoteException;
+public void startChat(java.lang.String email, com.unic.micsay.services.MessageListener listener) throws android.os.RemoteException;
 public void send(java.lang.String message) throws android.os.RemoteException;
 public void closeChat(java.lang.String email) throws android.os.RemoteException;
 }

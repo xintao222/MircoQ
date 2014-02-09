@@ -44,7 +44,8 @@ public class MessageCenter extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (ACTION_START.equalsIgnoreCase(intent.getAction())) {
+		if (null == account
+				&& ACTION_START.equalsIgnoreCase(intent.getAction())) {
 			Bundle bundle = intent.getExtras();
 			final String userName = bundle.getString(KEY_NAME);
 			final String passWord = bundle.getString(KEY_PASSWORD);
@@ -53,6 +54,7 @@ public class MessageCenter extends Service {
 		}
 
 		if (ACTION_SHUTDOWN.equalsIgnoreCase(intent.getAction())) {
+			this.account = null;
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}

@@ -17,6 +17,7 @@ import android.os.RemoteException;
 
 import com.unic.micsay.contentprovider.Tables;
 import com.unic.micsay.services.MessageBinder;
+import com.unic.micsay.services.MessageListener;
 import com.unic.rainbow.workstation.Action;
 import com.unic.rainbow.workstation.ToolSet;
 
@@ -57,14 +58,17 @@ public class XMPPChannel extends MessageBinder.Stub implements Action {
 	}
 
 	@Override
-	public void startChat(String email) throws RemoteException {
+	public void startChat(String email, MessageListener listener)
+			throws RemoteException {
 		if (null != currentChat) {
 			currentChat.onPause();
 		}
 		if (chats.containsKey(email)) {
-			chats.get(email).onResume();
+			this.currentChat = chats.get(email);
+			currentChat.onResume();
+			return;
 		}
-		ChatAction chatAction = new ChatAction();
+		ChatAction chatAction = new ChatAction(listener);
 		Chat chat = connection.getChatManager().createChat(email,
 				chatAction.listener);
 		chatAction.setChat(chat);

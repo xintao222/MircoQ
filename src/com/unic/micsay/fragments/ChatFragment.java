@@ -21,6 +21,7 @@ import com.unic.micsay.activitys.MainActivity;
 import com.unic.micsay.contentprovider.Tables;
 import com.unic.micsay.services.MessageBinder;
 import com.unic.micsay.services.MessageCenter;
+import com.unic.micsay.services.MessageListener;
 
 public class ChatFragment extends Fragment {
 	private MainActivity mainActivity = null;
@@ -57,16 +58,17 @@ public class ChatFragment extends Fragment {
 		this.titleView.setText(bundle.getString(Tables.Contact.Columns.ALIAS));
 		peer = bundle.getString(Tables.Contact.Columns.EMAIL);
 		sendBtn.setOnClickListener(sendListner);
-		if (null != messageBinder) {
-			try {
-				messageBinder.startChat(peer);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	private MessageBinder messageBinder = null;
+
+	private MessageListener.Stub listener = new MessageListener.Stub() {
+
+		@Override
+		public void processMessage(String msg) throws RemoteException {
+			chatArea.append(msg + "\n");
+		}
+	};
 
 	private ServiceConnection serviceConnection = new ServiceConnection() {
 
@@ -79,6 +81,11 @@ public class ChatFragment extends Fragment {
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder service) {
 			messageBinder = MessageBinder.Stub.asInterface(service);
+			try {
+				messageBinder.startChat(peer, listener);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
 		}
 	};
 
@@ -90,6 +97,7 @@ public class ChatFragment extends Fragment {
 				final String msg = msgBox.getText().toString();
 				try {
 					messageBinder.send(msg);
+					chatArea.append(msg + "\n");
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
