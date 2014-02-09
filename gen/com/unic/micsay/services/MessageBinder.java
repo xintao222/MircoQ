@@ -1,6 +1,6 @@
 /*
  * This file is auto-generated.  DO NOT MODIFY.
- * Original file: /home/javafx/workspace/MicSay/src/com/unic/micsay/services/MessageBinder.aidl
+ * Original file: /home/javafx/git/MircoQ/src/com/unic/micsay/services/MessageBinder.aidl
  */
 package com.unic.micsay.services;
 public interface MessageBinder extends android.os.IInterface
