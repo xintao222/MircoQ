@@ -35,9 +35,6 @@ public class ChatFragment extends Fragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 		mainActivity = (MainActivity) activity;
-		Intent service = new Intent(mainActivity, MessageCenter.class);
-		this.mainActivity.bindService(service, serviceConnection,
-				Context.BIND_AUTO_CREATE);
 	}
 
 	@Override
@@ -58,6 +55,14 @@ public class ChatFragment extends Fragment {
 		this.titleView.setText(bundle.getString(Tables.Contact.Columns.ALIAS));
 		peer = bundle.getString(Tables.Contact.Columns.EMAIL);
 		sendBtn.setOnClickListener(sendListner);
+	}
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Intent service = new Intent(mainActivity, MessageCenter.class);
+		this.mainActivity.bindService(service, serviceConnection,
+				Context.BIND_AUTO_CREATE);
 	}
 
 	private MessageBinder messageBinder = null;
@@ -116,13 +121,12 @@ public class ChatFragment extends Fragment {
 				e.printStackTrace();
 			}
 		}
-
+		mainActivity.unbindService(serviceConnection);
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
-		mainActivity.unbindService(serviceConnection);
 		mainActivity = null;
 	}
 
