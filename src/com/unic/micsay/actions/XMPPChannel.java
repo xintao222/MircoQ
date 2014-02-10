@@ -2,20 +2,21 @@ package com.unic.micsay.actions;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-
+import java.util.Set;
 import org.jivesoftware.smack.Chat;
 import org.jivesoftware.smack.Roster;
 import org.jivesoftware.smack.RosterEntry;
 import org.jivesoftware.smack.XMPPConnection;
-
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.RemoteException;
-
 import com.unic.micsay.contentprovider.Tables;
+import com.unic.micsay.datasource.ContactDataSource;
+import com.unic.micsay.models.User;
 import com.unic.micsay.services.MessageBinder;
 import com.unic.micsay.services.MessageListener;
 import com.unic.rainbow.workstation.Action;
@@ -37,12 +38,23 @@ public class XMPPChannel extends MessageBinder.Stub implements Action {
 
 	@Override
 	public void execute(ToolSet toolSet) {
+		ContactDataSource cantacts = new ContactDataSource(context);
+		final int count = cantacts.getCount();
+		Set<String> emails = new HashSet<String>();
+		for (int i = 0; i < count; i++) {
+			User user = (User) cantacts.getItem(i);
+			emails.add(user.getEmail());
+		}
+		cantacts.close();
 		ContentResolver cr = context.getContentResolver();
 		final String id = account.getLastPathSegment();
 		Roster roster = this.connection.getRoster();
 		final String serviceName = this.connection.getServiceName();
 		Collection<RosterEntry> entries = roster.getEntries();
 		for (RosterEntry en : entries) {
+			if (emails.contains(en.getName() + "@" + serviceName)) {
+				continue;
+			}
 			ContentValues values = new ContentValues();
 			values.put(Tables.Contact.Columns.ALIAS, en.getUser());
 			values.put(Tables.Contact.Columns.EMAIL, en.getName() + "@"
